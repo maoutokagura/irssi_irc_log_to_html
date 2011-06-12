@@ -6,11 +6,13 @@ $buffer = $ENV{'QUERY_STRING'};
 $i;
 @nick;
 @colors = ('Maroon','Green','aqua','yellow','Teal','Purple','fuchsia','lime','orange','red');
+$logdir = "/home/2TB/irclog/";
+$script_name = "log_script.cgi";
 
 print "Content-type: text/html", "\n\n";
 print <<EOM;
 <html>\n <head>\n
-<link rel="stylesheet" type="text/css" href="../irclog.css">\n
+<link rel="stylesheet" type="text/css" href="../../irclog.css">\n
 </head>\n <body>\n
 EOM
 
@@ -27,11 +29,11 @@ print <<EOM;
 EOM
 
 sub getlog{
-    chdir("/home/2TB/irclog/");
+    chdir($logdir);
     my @follist= glob "*/";
     my $folname = $follist[$channel - 1];
     print "$folname<br>\n";
-    chdir("/home/2TB/irclog/$folname");
+    chdir("$logdir$folname");
     open(IN, $date);
     while ( $line = <IN>) {
 	print &rewrite($line);
@@ -43,25 +45,25 @@ sub getlog{
 
 sub getfiles{
     my $req = $channel;
-    chdir("/home/2TB/irclog/");
+    chdir("$logdir");
     my @follist= glob "*/";
     my $folname = $follist[$req - 1];
     print "$folname<br>\n aa\n";
-    chdir("/home/2TB/irclog/$folname");
+    chdir("$logdir$folname");
     my @filelist= glob "*.txt";
     foreach my $file (sort @filelist){
 	next if( $file =~ /^\.{1,2}$/ );
-	&herf("fol4_2TB.cgi?$channel&$file",$file,br);
+	&herf("$script_name?$channel&$file",$file,br);
     }
 }
 
 sub getfol{
-    chdir("/home/2TB/irclog/");
+    chdir("$logdir");
     my @file= glob "*/";
     my $i = 1;
     foreach my $direct (@file){
 	next if( $file =~ /^\.{1,2}$/ );
-	&herf("fol4_2TB.cgi?$i",$direct,br);
+	&herf("$script_name?$i",$direct,br);
 	$i = $i + 1;
     }
 }
@@ -83,7 +85,7 @@ sub rewrite{
 	    push(@nick,$tennpo);
 	}
     }
-    $nick_color = @colors[(&sagasu($tennpo,@nick) % scalar(@colors))];
+    $nick_color = @colors[(&nick_search($tennpo,@nick) % scalar(@colors))];
     $string =~ s/^(\d\d:\d\d)\s\W(\S+?:)/<span style="color:blue;">\1<\/span><span style="color:$nick_color ;"> \2<\/span>/;
     if ($string =~ m/.*(http.*?)\s/o){
 	$tennpo = $1;
@@ -104,7 +106,7 @@ sub rewrite_time{
     my $time =@_;
 }
 
-sub sagasu {
+sub nick_search {
     my ($what, @area) = @_;
     foreach my $idx (0..$#area) {
 	if ($area[$idx] =~ /$what/) { return $idx }
