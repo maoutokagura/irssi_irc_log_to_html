@@ -53,7 +53,7 @@ sub getfiles{
     my @filelist= glob "*.txt";
     foreach my $file (sort @filelist){
 	next if( $file =~ /^\.{1,2}$/ );
-	&herf("$script_name?$channel&$file",$file,br);
+	&href("$script_name?$channel&$file",$file,br);
     }
 }
 
@@ -63,12 +63,12 @@ sub getfol{
     my $i = 1;
     foreach my $direct (@file){
 	next if( $file =~ /^\.{1,2}$/ );
-	&herf("$script_name?$i",$direct,br);
+	&href("$script_name?$i",$direct,br);
 	$i = $i + 1;
     }
 }
 
-sub herf {
+sub href {
     my($url, $alt, $br) = @_;
     print"<a href\=$url>$alt<\/a>";
     if ($br eq br) {print "<br>";}
