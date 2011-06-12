@@ -1,1 +1,9 @@
-aaaaaaaaaaaaaaaaaaaaa
+	What is this script ?
+irssiが吐き出すスクリプトを見やすいように整形してHTMLで出力するスクリプト.
+
+	How to use ?
+irssiのログを、hogehoge/channel/date.txtに吐き出させる。
+スクリプトを、apacheのcgiが実行できる所に置く。
+実行権限を付けて、ブラウザから見る。
+あとは、自分で好きなcss書けばいいんでね？
+
