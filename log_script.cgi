@@ -5,7 +5,7 @@ $buffer = $ENV{'QUERY_STRING'};
 
 $i;
 @nick;
-@colors = ('Maroon','Green','aqua','yellow','Teal','Purple','fuchsia','lime','orange','red');
+@colors = ('aqua','yellow','Teal','Purple','fuchsia','lime','orange','red','Maroon','Green');
 $logdir = "/home/2TB/irclog/";
 $script_name = "log_script.cgi";
 
