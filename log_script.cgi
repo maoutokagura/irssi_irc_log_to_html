@@ -5,7 +5,7 @@ $buffer = $ENV{'QUERY_STRING'};
 
 $i;
 @nick;
-@colors = ('aqua','yellow','Teal','Purple','fuchsia','lime','orange','red','Maroon','Green');
+@colors = ('aqua','yellow','lime','fuchsia','orange','Teal','red','Purple','Maroon','Green');
 $logdir = "/home/2TB/irclog/";
 $script_name = "log_script.cgi";
 
@@ -13,7 +13,7 @@ print "Content-type: text/html", "\n\n";
 print <<EOM;
 <html>\n <head>\n
 <link rel="stylesheet" type="text/css" href="../../irclog.css">\n
-</head>\n <body>\n
+</head>\n <body>\n<div id="main">
 EOM
 
 if ($buffer ==  NULL){
@@ -24,8 +24,7 @@ if ($buffer ==  NULL){
     &getlog;
 }
 print <<EOM;
-</body>\n
-</html>\n
+</div>\n</body>\n</html>\n
 EOM
 
 sub getlog{
@@ -76,16 +75,19 @@ sub href {
 }
 
 sub rewrite{
-    my $tennpo = $_ = $string = @_[0];
+    my $string = @_[0];
+    my $tennpo;
     my $nick_color;
 
-    if(s/^(\d\d:\d\d)\s\W(\S+?:).*/\2/){
-	$tennpo = $_ . "<br>";
+    
+    if($string =~ m/^(\d\d:\d\d)\s\W(\S+?:)/){
+	$tennpo = $2 . "<br>";
 	if (!grep(/$tennpo/,@nick)){
 	    push(@nick,$tennpo);
 	}
     }
     $nick_color = @colors[(&nick_search($tennpo,@nick) % scalar(@colors))];
+    $string =~ s/</\&lt\;/g;
     $string =~ s/^(\d\d:\d\d)\s\W(\S+?:)/<span style="color:blue;">\1<\/span><span style="color:$nick_color ;"> \2<\/span>/;
     if ($string =~ m/.*(http.*?)\s/o){
 	$tennpo = $1;
@@ -93,8 +95,10 @@ sub rewrite{
 	if($tennpo =~ /(jpg)|(png)|(gif)$/){
 	    return "<img height=200 src=\"$tennpo \"><br>" . $string . "<br>\n";
 	}
-	if($tennpo =~ /http:\/\/www\.youtube\.com\/.*v=([^&]+).*/){
+	elsif($tennpo =~ /http:\/\/www\.youtube\.com\/.*v=([^&]+).*/){
 	    return "<img height=200 src=\"http\:\/\/i.ytimg\.com\/vi\/$1/default.jpg \"><br>" . $string . "<br>\n";
+	}else{
+	    return "<img src=\"http\:\/\/capture.heartrails.com\/\?$tennpo \"><br>" . $string . "<br>\n";
 	}
 	return $string ."<br>\n";
     }else{
