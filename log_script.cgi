@@ -1,13 +1,14 @@
 #!/usr/bin/perl
 
-$buffer = $ENV{'QUERY_STRING'};
-($channel,$date,$enc) = split(/&/,$buffer);
+use strict;
+my $buffer = $ENV{'QUERY_STRING'};
+my ($channel,$date,$enc) = split(/&/,$buffer);
 
-$i;
-@nick;
-@colors = ('aqua','yellow','lime','fuchsia','orange','Teal','red','Purple','Maroon','Green');
-$logdir = "/home/2TB/irclog/";
-$script_name = "log_script.cgi";
+my $i;
+my @nick;
+my @colors = ('aqua','yellow','lime','fuchsia','orange','Teal','red','Purple','Maroon','Green');
+my $logdir = "/home/2TB/irclog/";
+my $script_name = "log_script.cgi";
 
 print "Content-type: text/html", "\n\n";
 print <<EOM;
@@ -16,9 +17,12 @@ print <<EOM;
 </head>\n <body>\n<div id="main">
 EOM
 
-if ($buffer ==  NULL){
+chdir("$logdir");
+my @follist= glob "*/";
+
+if ($buffer ==  undef){
     &getfol;
-}elsif($date == NULL){
+}elsif($date == undef){
     &getfiles;
 }else{
     &getlog;
@@ -28,8 +32,7 @@ print <<EOM;
 EOM
 
 sub getlog{
-    chdir($logdir);
-    my @follist= glob "*/";
+    my $line;
     my $folname = $follist[$channel - 1];
     print "$folname<br>\n";
     chdir("$logdir$folname");
@@ -44,25 +47,21 @@ sub getlog{
 
 sub getfiles{
     my $req = $channel;
-    chdir("$logdir");
-    my @follist= glob "*/";
     my $folname = $follist[$req - 1];
     print "$folname<br>\n aa\n";
     chdir("$logdir$folname");
     my @filelist= glob "*.txt";
     foreach my $file (sort @filelist){
 	next if( $file =~ /^\.{1,2}$/ );
-	&href("$script_name?$channel&$file",$file,br);
+	&href("$script_name?$channel&$file",$file,"br");
     }
 }
 
 sub getfol{
-    chdir("$logdir");
-    my @file= glob "*/";
     my $i = 1;
-    foreach my $direct (@file){
-	next if( $file =~ /^\.{1,2}$/ );
-	&href("$script_name?$i",$direct,br);
+    foreach my $direct (@follist){
+	next if( $direct =~ /^\.{1,2}$/ );
+	&href("$script_name?$i",$direct,"br");
 	$i = $i + 1;
     }
 }
@@ -70,7 +69,7 @@ sub getfol{
 sub href {
     my($url, $alt, $br) = @_;
     print"<a href\=$url>$alt<\/a>";
-    if ($br eq br) {print "<br>";}
+    if ($br eq "br") {print "<br>";}
     print "\n";
 }
 
@@ -111,6 +110,7 @@ sub rewrite_time{
 }
 
 sub nick_search {
+    my $area;
     my ($what, @area) = @_;
     foreach my $idx (0..$#area) {
 	if ($area[$idx] =~ /$what/) { return $idx }
